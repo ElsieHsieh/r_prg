@@ -1,2 +1,1 @@
-# r_prg_midterm_01
-first midterm homework for R programming
+# NTU資訊系統訓練班 R Programming 作業

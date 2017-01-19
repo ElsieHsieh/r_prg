@@ -1,0 +1,89 @@
+---
+title: "R_HW2"
+author: "Elsie"
+date: "2017年1月19日"
+output: html_document
+css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+# 標題一
+
+標題一底下的**粗體文字**。
+
+
+## 這是標題二
+
+標題二底下的一段*斜體*文字。
+
+### List
+
+常用的玩具資料
+
+1. cars
+2. iris
+3. mtcars
+4. mpg(from ggplot2)
+
+### 巢狀清單
+
+- 短
+- 中
+    1. 1200m
+    2. 3000m
+    3. 5000m
+- 長
+    - 10000m
+    - 半馬
+    - 全馬
+
+## 程式碼
+
+可以把程式寫在描述中，像是`head(iris)`，這叫做**Inline code**。
+
+另外一種寫法是**Code chunk**:
+
+顯示程式碼，但隱藏結果
+
+```{r results='hide'}
+head(iris)
+tail(iris)
+```
+
+隱藏程式碼，但顯示結果
+
+```{r echo=FALSE}
+head(iris)
+tail(iris)
+```
+
+## 畫圖表
+
+```{r message=FALSE}
+library(ggplot2)
+ggplot(cars,aes(speed))+geom_histogram()
+```
+
+## 引用
+
+> Everything happens is a founction call.
+
+---
+
+> Run, Forrest!Run!
+
+## 轉換型別的函數
+
+|函數名稱|功能|
+|--------|----|
+|`as.numeric()`|轉換成numeric|
+|`as.logical()`|轉換成logical|
+
+## Import Image
+
+![R image](akmu.jpg)

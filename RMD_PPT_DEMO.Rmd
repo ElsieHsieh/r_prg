@@ -1,0 +1,63 @@
+---
+title: "Untitled"
+author: "Elsie"
+date: '2017-01-19'
+output:
+  slidy_presentation: 
+        css: style.css
+        footer: "Copyright (c) 2014, RStudio"
+  ioslides_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## R Markdown
+
+**粗體文字**
+*斜體文字*
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
+## 巢狀清單
+
+1. item 1
+    - sub-item 1 
+    - sub-item 2
+
+2. item 2
+    - sub-item 1
+    - sub-item 2 
+    
+## 畫圖表
+
+```{r message=FALSE,echo=FALSE}
+library(ggplot2)
+ggplot(cars,aes(speed))+geom_histogram()
+```
+
+## Reference
+
+- [R markdown document](http://rmarkdown.rstudio.com/html_document_format.html#table_of_contents)
+
+## import image
+
+![R image](akmu.jpg)

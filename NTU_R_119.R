@@ -1,0 +1,1 @@
+char_vector <- readLines("https://tw.stock.yahoo.com/d/i/rank.php?t=pri&e=tse&n=100", n = 10,sep=":")

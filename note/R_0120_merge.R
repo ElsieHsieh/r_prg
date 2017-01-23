@@ -9,3 +9,6 @@ straw_hat_merged <- merge(straw_hat_df,straw_hat_devil_fruit)
 
 straw_hat_left_merged <- merge(straw_hat_df,straw_hat_devil_fruit,all.x = TRUE)
 #保留左邊所有資料
+
+straw_hat_df_devil_fruit <- merge(straw_hat_df, straw_hat_devil_fruit, all.x = TRUE, all.y = TRUE)
+View(straw_hat_df_devil_fruit)

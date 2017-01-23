@@ -1,31 +1,125 @@
 ---
-title: "自來水"
-author: "Ching-En"
+title: "R程式設計-作業二"
+author: "謝青恩"
 date: "2017年1月23日"
-output: html_document
-css: ../style.css
+output: 
+  html_document:
+    toc: TRUE
+    depth: 3
+    
+    css: ../style.css
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+##**資料簡介**
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+- 資料集名稱：自來水生活用水量統計
+- 資料來源：行政院環境保護署
+- 資料發布時間：105年9月13日
+- 資料欄位：統計年度(Year)、縣市別(ExecutingUnit)、生活用水量(TheDomesticConsumptionOfWater)、年中供水人數(PopulationServed)、每人每日生活用水量(TheDailyDomesticConsumptionOfWaterPerPerson)、備註(Remarks)
+- 資料內容：2008年至2014年各縣市的自來水用水量統計
+```{R echo=FALSE}
+library(jsonlite)
+url <- "water.json" 
+water_json <- fromJSON(url)
+head(water_json,n=5)
 ```
 
-## Including Plots
+##**每人每日用水量**
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+2008年至2014年間各縣市人口的每人平均用水量以225公升至250公升為主。
+```{R echo=FALSE}
+hist(as.numeric(water_json$DailyWaterPerPerson), main = "每人每日用水量統計",xlab="每人每日用水量(L)",ylab="統計次數")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+1996年至2014年平均每人每日用水量逐漸下降且趨於平緩，近年主要落在250公升左右。
+```{R echo=FALSE,message=FALSE}
+#1996~2014年平均每人每日用水量變化
+formatdate <- format(as.Date(water_json$Year,format = "%Y/%m/%d"),format="%Y")
+DWP_mean <- vector("numeric",length=7)
+    
+  for(i in 1:7){
+      PerYear <- water_json[formatdate==i+2007,] #篩選出2008~2014各年度的資料
+      DWP_num <- as.numeric(PerYear$DailyWaterPerPerson)
+      mean_result <- mean(DWP_num)#算各年的平均
+      DWP_mean[i] <- mean_result #將計算結果依序填入vector
+  }  
+
+year <- c(2008:2014)
+DWP_year_mean <- data.frame(year, DWP_mean) #各年與平均數的df
+
+#只畫2008-2014的圖太醜
+#但opendata只開放2008年以後，2008以前只放在網站圖表上
+mean_2007 <- c(2007,279)
+mean_2006 <- c(2006,279)
+mean_2005 <- c(2005,277)
+mean_2004 <- c(2004,274)
+mean_2003 <- c(2003,275)
+mean_2002 <- c(2002,275)
+mean_2001 <- c(2001,285)
+mean_2000 <- c(2000,280)
+mean_1999 <- c(1999,278)
+mean_1998 <- c(1998,282)
+mean_1997 <- c(1997,286)
+mean_1996 <- c(1996,291)
+DWP_year_mean <- rbind(DWP_year_mean,mean_2007,mean_2006,mean_2005,mean_2004,
+                       mean_2003,mean_2002,mean_2001,mean_2000,mean_1999,
+                       mean_1998,mean_1997,mean_1996)
+
+#DWP_year_mean[order(DWP_year_mean$year),]
+library(dplyr)
+
+DWP_year_mean <- arrange(DWP_year_mean, year)
+mean_year_bar <- barplot(DWP_year_mean$DWP_mean,names = DWP_year_mean$year,main="1996年至2014年每人每日用水量統計",xlab="年",ylab="公升")
+
+```
+
+## **六個直轄市生活用水量比較**
+
+發現臺北市的人用水比較兇。而臺中市的人民在這七年間平均生活用水量變化幅度甚大，可以進一步篩選出來觀察看看。
+```{R echo=FALSE,message=FALSE}
+#篩出六都(包含升格前後)
+
+filter_city_vec <- c("臺北","桃園","臺中","臺南","新北","高雄")
+Six_City=data.frame()
+for(i in 1:length(filter_city_vec)){
+  result <- water_json[grep(filter_city_vec[i],water_json$ExecutingUnit),]
+  Six_City <- rbind(Six_City,result)
+}
+
+#處理升格前後的CityName
+NewTaipeiCity <- gsub("臺北縣", "新北市", Six_City$ExecutingUnit)
+New_City_Name <- gsub("縣", "市", NewTaipeiCity)
+Six_City <- cbind(Six_City,New_City_Name)
+
+boxplot(as.numeric(Six_City$DailyWaterPerPerson) ~ Six_City$New_City_Name, main = "2008-2014年六都每人每日用水量",ylab="公升")
+```
+
+臺北市人民用水量雖然居高但是有逐年省水的情形。
+臺中市人民的用水量突然在2011年大幅下降。
+```{R echo=FALSE,message=FALSE}
+
+#臺北市各年直方圖
+Taipei <- water_json[water_json$ExecutingUnit=="臺北市",]
+Date_Taipei <- as.Date(Taipei$Year,format = "%Y/%m/%d")
+Year_Taipei <- format(Date_Taipei,format="%Y")
+DWP_Taipei <- as.numeric(Taipei$DailyWaterPerPerson) 
+plot(Year_Taipei, DWP_Taipei, type = "l", main = "2008年到2014年臺北市生活用水量", xlab = "Year", ylab = "公升",col="#5205de")
+
+#臺中市各年line chart
+TaiC <- water_json[grep("臺中市",water_json$ExecutingUnit),]
+Date_Taichung <- as.Date(TaiC$Year,format = "%Y/%m/%d")
+Year_Taichung <- format(Date_Taichung,format="%Y")
+DWP_Taichung <- as.numeric(TaiC$DailyWaterPerPerson) 
+plot(Year_Taichung, DWP_Taichung, type = "l", main = "2008年到2014年臺中市每人每日生活用水量", xlab = "Year", ylab = "公升",col="#5205de")
+```
+
+用散佈圖來看各年度各縣市不同的自來水供給人口數和人均用水量，看不出什麼明顯的趨勢。
+(充版面用XD)
+
+```{R echo=FALSE,message=FALSE}
+plot(Six_City$PopulationServed, Six_City$DailyWaterPerPerson, main = "六都供水人數vs.每人每日生活用水量", xlab = "人數", ylab = "用水量")
+```

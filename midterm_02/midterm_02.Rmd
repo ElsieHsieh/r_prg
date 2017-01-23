@@ -16,11 +16,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ##**資料簡介**
 
-- 資料集名稱：自來水生活用水量統計
-- 資料來源：行政院環境保護署
-- 資料發布時間：105年9月13日
-- 資料欄位：統計年度(Year)、縣市別(ExecutingUnit)、生活用水量(TheDomesticConsumptionOfWater)、年中供水人數(PopulationServed)、每人每日生活用水量(TheDailyDomesticConsumptionOfWaterPerPerson)、備註(Remarks)
-- 資料內容：2008年至2014年各縣市的自來水用水量統計
+- **資料集名稱**：自來水生活用水量統計
+- **資料來源**：行政院環境保護署
+- **資料發布時間**：105年9月13日
+- **資料欄位**：統計年度(Year)、縣市別(ExecutingUnit)、生活用水量(TheDomesticConsumptionOfWater)、年中供水人數(PopulationServed)、每人每日生活用水量(TheDailyDomesticConsumptionOfWaterPerPerson)、備註(Remarks)
+- **資料內容**：2008年至2014年各縣市的自來水用水量統計
+
 ```{R echo=FALSE}
 library(jsonlite)
 url <- "water.json" 
@@ -31,11 +32,13 @@ head(water_json,n=5)
 ##**每人每日用水量**
 
 2008年至2014年間各縣市人口的每人平均用水量以225公升至250公升為主。
+
 ```{R echo=FALSE}
-hist(as.numeric(water_json$DailyWaterPerPerson), main = "每人每日用水量統計",xlab="每人每日用水量(L)",ylab="統計次數")
+hist(as.numeric(water_json$DailyWaterPerPerson), main = "每人每日用水量統計",xlab="每人每日用水量(公升)",ylab="統計次數")
 ```
 
 1996年至2014年平均每人每日用水量逐漸下降且趨於平緩，近年主要落在250公升左右。
+
 ```{R echo=FALSE,message=FALSE}
 #1996~2014年平均每人每日用水量變化
 formatdate <- format(as.Date(water_json$Year,format = "%Y/%m/%d"),format="%Y")
@@ -79,7 +82,9 @@ mean_year_bar <- barplot(DWP_year_mean$DWP_mean,names = DWP_year_mean$year,main=
 
 ## **六個直轄市生活用水量比較**
 
-發現臺北市的人用水比較兇。而臺中市的人民在這七年間平均生活用水量變化幅度甚大，可以進一步篩選出來觀察看看。
+發現臺北市的人用水比較兇。而臺中市的人民在這七年間平均生活用水量變化幅度甚大，
+可以進一步篩選出來觀察看看。
+
 ```{R echo=FALSE,message=FALSE}
 #篩出六都(包含升格前後)
 
@@ -100,6 +105,7 @@ boxplot(as.numeric(Six_City$DailyWaterPerPerson) ~ Six_City$New_City_Name, main 
 
 臺北市人民用水量雖然居高但是有逐年省水的情形。
 臺中市人民的用水量突然在2011年大幅下降。
+
 ```{R echo=FALSE,message=FALSE}
 
 #臺北市各年直方圖

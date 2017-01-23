@@ -1,19 +1,19 @@
-*{
-	font-family: "微軟正黑體";
+* {
+    font-family: "微軟正黑體";
 }
 
-p{
-	font-size: 18px;
+p {
+    font-size: 18px;
 }
 
-h2{
-	color: #2d5fc4;
+h2 {
+    color: #2d5fc4;
 }
 
-a{
-	color: gray;
+a {
+    color: #666666;
 }
 
-li{
-	font-size: 18px;
+li {
+    font-size: 18px;
 }

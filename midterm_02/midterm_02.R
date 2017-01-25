@@ -1,7 +1,7 @@
 library(jsonlite)
 
 url <- "water.json" 
-water_json <- fromJSON(url)
+water_json <- fromJSON(url,stringsAsFactors = FALSE)
 
 plot(Six_City$PopulationServed, Six_City$DailyWaterPerPerson, main = "六都供水人數vs.每人每日生活用水量", xlab = "人數", ylab = "用水量")
 
@@ -74,3 +74,8 @@ library(dplyr)
 DWP_year_mean <- arrange(DWP_year_mean, year)
 mean_year_bar <- barplot(DWP_year_mean$DWP_mean,names = DWP_year_mean$year)
 
+water_json %>%
+  group_by(ExecutingUnit) %>%
+  summarise(mean_city = mean(as.numeric(DailyWaterPerPerson))
+            ) %>%
+  View()

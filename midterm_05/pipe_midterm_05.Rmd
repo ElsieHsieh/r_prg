@@ -1,0 +1,32 @@
+---
+title: "Midterm_05"
+author: "Ching-En Hsieh"
+date: "2017年1月25日"
+output:
+  html_document:
+    css: ../style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 使用%>%簡化程式寫法
+
+```{R}
+library(magrittr)
+load(url("https://storage.googleapis.com/r_rookies/straw_hat_df.RData"))
+
+straw_hat_df$birth_date1 <- Sys.Date() %>%
+  format( format = '%Y') %>%
+  as.numeric() %>%
+  `-` (straw_hat_df$age) %>%
+  paste(straw_hat_df$birthday, sep = "-") %>%
+  as.Date()
+```
+
+# Dataframe預覽
+
+```{R echo=FALSE}
+head(straw_hat_df)
+```

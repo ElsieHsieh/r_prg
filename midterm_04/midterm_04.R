@@ -29,7 +29,7 @@ my.sort <- function(input_vec,decreasing = FALSE){
 unsorted_vec <- round(runif(10)*100)
 my.sort(unsorted_vec,decreasing = TRUE)
 
-# 02 樣本標準差
+-----------------# 02 樣本標準差-----------------
 
 my.sd <- function(input_vec){
   
@@ -46,7 +46,7 @@ set.seed(9487)
 my_seq <- round(runif(10)*100)
 my.sd(my_seq)
 
-#03 BMI
+-----------------#03 BMI-----------------
 
 BMI_calculator <- function(w,h){
   h <- h/100

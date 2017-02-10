@@ -35,7 +35,7 @@ accuracy
 
 #隨機森林模型是決策樹的加強版
 library(randomForest)
-#要把目標變數先轉成factor <- line 4
+#要把目標變數先轉成factor <- line 10
 Forest_fit <- randomForest(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked , data = train, ntree = 200)
 
 Forest_prediction <- predict(Forest_fit, newdata = test[, c("Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked")])

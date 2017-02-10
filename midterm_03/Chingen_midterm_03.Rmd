@@ -1,30 +1,65 @@
 ---
-title: "ggplot2期中作業"
-author: "Elsie"
-date: "2017年1月19日"
-output: html_document
+title: "R程式設計-作業三"
+author: "Elsie Hsieh"
+date: "2017年2月4日"
+output:
+  html_document:
+    toc: TRUE
+    depth: 3
+    
+    css: ../style.css
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+##**資料簡介**
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+- **資料集名稱**：臺北市行政區竊盜案件
+- **資料來源**：臺北市政府主計處
+- **資料欄位**：鄉鎮市區名稱、發生件數/總計(件)、發生率(件/十萬人)、破獲件數/總計(件)、破獲率(%)、嫌疑犯人數/總計(件)、犯罪人口率(人/十萬人)
+- **資料內容**：2007年至2015年臺北市各行政區竊盜案件統計
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{R echo=FALSE}
+crime_df <- read.csv("2007_2015_Taipei_Larcenies.csv")
+head(crime_df,n=5)
 ```
 
-## Including Plots
+- **資料集名稱**：2016年臺北市犯罪資料
+- **資料來源**：警政署
+- **資料欄位**：案類、發生日期、發生地點
+- **資料內容**：毒品、強盜、搶奪、住宅盜竊、汽車竊盜、機車竊盜、強制性交等7案類犯罪發生資料
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{R echo=FALSE}
+library(jsonlite)
+url <- "2016_Taipei_Crime.json" 
+crime_2016_df <- fromJSON(url)
+head(crime_2016_df,n=5)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+##**2007年-2015年臺北市竊盜案件**
+
+```{R echo=FALSE,message=FALSE}
+library(ggplot2)
+library(plotly)
+Sum_Offenders_Year <- aggregate(crime_df$Offenders, by=list(Year=crime_df$Year), FUN=sum)
+colnames(Sum_Offenders_Year) <- c("Year", "Offenders")
+Sum_OffenseClearedNumber_Year <- aggregate(crime_df$OffenseClearedNumber, by=list(Year=crime_df$Year), FUN=sum)
+colnames(Sum_OffenseClearedNumber_Year) <- c("Year", "OffenseClearedNumber")
+Sum_TotalEvent_Year <- aggregate(crime_df$TotalEvent, by=list(Year=crime_df$Year), FUN=sum)
+colnames(Sum_TotalEvent_Year) <- c("Year", "TotalEvent")
+
+Sum_Year <- merge(Sum_Offenders_Year, Sum_OffenseClearedNumber_Year, all.x = TRUE)
+Sum_Year <- merge(Sum_Year, Sum_TotalEvent_Year, all.x = TRUE)
+library(tidyr)
+Sum_Year_long_df <- gather(Sum_Year, key = Category, value = values, Offenders, OffenseClearedNumber,TotalEvent)
+
+linechart <- ggplot(Sum_Year_long_df, aes(x = Year, y = values , colour = Category)) + 
+  geom_point() +
+  geom_line()+
+  ggtitle("2007-2015年臺北市竊盜犯罪統計") +
+  xlab("Year") +
+  ylab("Value")
+ggplotly(linechart)
+```

@@ -26,7 +26,7 @@ embark_fare <- titanic %>%
 ggplot(embark_fare, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +
   geom_boxplot() +
   ggtitle("登船港口和乘客等級之票價盒鬚圖") +
-  scale_fill_brewer(palette = "Set1")
+  scale_fill_brewer(palette = "Set3")
 
 titanic$Embarked[titanic$Embarked == ""] <- "C"
 

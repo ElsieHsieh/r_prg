@@ -66,6 +66,7 @@ embark_fare <- titanic %>%
   filter(Embarked != "")
 ggplot(embark_fare, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +
   geom_boxplot() +
+  scale_fill_brewer(palette = 7 , type = "div") +
   ggtitle("登船港口和乘客等級之票價盒鬚圖")
 ```
 
@@ -177,5 +178,5 @@ write.csv(to_submit_cart,file="to_be_submitted_cart.csv",row.names = FALSE)
 使用隨機森林預測模型的結果分數為0.76555。
 ![](kaggle_rf_predict.JPG)　　　　
 
-使用決策樹預測模型的結果分數為**0.79426**。
+使用決策樹預測模型的結果分數為**<span style="color: #ff7f50; font-size: 20pt">0.79426</span>**。
 ![](kaggle_my_score.JPG)

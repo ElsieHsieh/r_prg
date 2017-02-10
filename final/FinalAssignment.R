@@ -24,7 +24,10 @@ embark_fare <- titanic %>%
 #以登船港口和乘客等級分別繪製票價盒鬚圖
 #發現票價80元與C港口高階乘客票價中位數差不多，故將Embarked兩個遺漏值指派為C
 ggplot(embark_fare, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +
-  geom_boxplot()
+  geom_boxplot() +
+  ggtitle("登船港口和乘客等級之票價盒鬚圖") +
+  scale_fill_brewer(palette = "Set1")
+
 titanic$Embarked[titanic$Embarked == ""] <- "C"
 
 #挑出遺漏Fare的資料來觀看

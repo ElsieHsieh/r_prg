@@ -65,7 +65,8 @@ head(embark_missing)
 embark_fare <- titanic %>%
   filter(Embarked != "")
 ggplot(embark_fare, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +
-  geom_boxplot()
+  geom_boxplot() +
+  ggtitle("登船港口和乘客等級之票價盒鬚圖")
 ```
 
 發現票價80元與C港口高階乘客票價中位數差不多，故將Embarked兩個遺漏值填補為C。
@@ -90,7 +91,7 @@ third_s <- titanic[titanic$Pclass == '3' & titanic$Embarked == 'S', ]
 ```{R echo = FALSE , message = FALSE , warning = FALSE}
 fare_density <- ggplot(third_s , aes(x = Fare)) + 
   geom_density(fill = '#2fb8be',alpha=0.5) + 
-  ggtitle("")
+  ggtitle("南安普敦港口上船的第三階級乘客票價(Interactive chart)")
 ggplotly(fare_density)
 ```
 ```{R echo = FALSE , message = FALSE , warning = FALSE}
@@ -117,9 +118,29 @@ mice_output <- complete(mice_result)
 titanic$Age <- mice_output$Age
 ```
 
-## 3.建立模型及預測
+## 3.資料視覺化
 
-將填補好遺漏值的titanic資料還原成train與test資料。
+運用填補好各個遺漏值的資料來進行視覺化圖表繪製與觀察。首先要將填補好遺漏值的titanic資料還原成train與test資料。以具備Survived值的train data進行圖表繪製。　　　
+```{R echo = TRUE , message = FALSE , warning = FALSE}
+train <- titanic[1:891,]
+```
+```{R echo = FALSE , message = FALSE , warning = FALSE}
+ggplot(data = train, aes(x = Age, y = Survived, color = Sex)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(se = FALSE) +
+  facet_grid(Pclass ~ .) +
+  scale_color_manual(values = c("#ff7f50", "#2fb8be")) +
+  ggtitle("各階級與各年齡層男女性的生存情形散佈圖")
+```
+
+以下幾點觀察發現：
+
+- 整體而言三種階級以及各年齡層中，女性的生存率比男性高。
+- 各階級中，中上層階級的女性更具有生存優勢。
+- 各年齡層中，孩童的生存率較高，除了上層階級的女童部分。
+
+## 4.建立模型及預測
+
 分別使用Random Forest及Classification And Regression Tree來建立預測模型。
 ```{R echo = FALSE , message = FALSE , warning = FALSE}
 titanic$Survived <- factor(titanic$Survived)
@@ -151,7 +172,7 @@ names(to_submit_cart) <- c("PassengerId", "Survived")
 write.csv(to_submit_cart,file="to_be_submitted_cart.csv",row.names = FALSE)
 ```
 
-## 4.提交至Kaggle
+## 5.提交至Kaggle
 
 使用隨機森林預測模型的結果分數為0.76555。
 ![](kaggle_rf_predict.JPG)　　　　

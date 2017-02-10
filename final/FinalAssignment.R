@@ -74,4 +74,15 @@ prp(tree_fit,         # 模型
     fallen.leaves=TRUE, # 讓樹枝以垂直方式呈現
     shadow.col="gray",  # 最下面的節點塗上陰影
     # number of correct classifications / number of observations in that node
-    extra=2)  
+    extra=2) 
+
+
+#繪製散佈圖的趨勢曲線圖前，要先把存活值從factor轉回integer
+train$Survived <-as.numeric(as.character(train$Survived))
+ggplot(data = train, aes(x = Age, y = Survived, color = Sex)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(se = FALSE) +
+  facet_grid(Pclass ~ .) +
+  theme(text = element_text(size=20)) +
+  scale_color_manual(values = c("#ff7f50", "#2fb8be"))
+

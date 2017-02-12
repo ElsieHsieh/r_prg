@@ -6,12 +6,13 @@ crime_df <- read.csv("2007_2015_Taipei_Larcenies.csv")
 url <- "2016_Taipei_Crime.json" 
 crime_2016_df <- fromJSON(url)
 
-pointchart <- ggplot(crime_df, aes(x = TotalEvent, y = OffenseClearedNumber)) + 
-  geom_point(aes(colour = factor(Year)))+
+pointchart <- ggplot(crime_df, aes(label = TownName , label1= Year , x = TotalEvent, y = OffenseClearedNumber)) + 
+  geom_point(aes(colour = factor(TownName)))+
   ggtitle("2007-2015年臺北市各行政區 竊盜案件數 vs. 破獲件數") +
   xlab("竊盜案件數") +
   ylab("破獲件數") +
-  scale_colour_hue(name = "Year")
+  scale_colour_hue(name = "Year") +
+  geom_abline(intercept = 1, slope = 1, linetype = "dashed")
 ggplotly(pointchart)
 
 Sum_Offenders_Year <- aggregate(crime_df$Offenders, by=list(Year=crime_df$Year), FUN=sum)

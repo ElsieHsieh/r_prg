@@ -4,9 +4,11 @@ author: "Elsie Hsieh"
 date: "2017年2月4日"
 output:
   html_document:
-    toc: TRUE
-    depth: 3
-    
+    toc: true
+    toc_float: TRUE
+    toc_depth: 3
+    theme: yeti
+    highlight: haddock
     css: ../style.css
 ---
 
@@ -14,7 +16,21 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##**資料簡介**
+```{R echo = FALSE , message = FALSE , warning = FALSE}
+library(ggplot2)
+library(plotly)
+library(tidyr)
+library(dplyr)
+library(jsonlite)
+```
+
+**使用ggplot2繪製散佈圖、線圖、直方圖、盒鬚圖與長條圖。**
+
+* * *
+
+## **臺北市竊盜案件(2007-2015)**
+
+### **資料簡介**
 
 - **資料集名稱**：臺北市行政區竊盜案件
 - **資料來源**：臺北市政府主計處
@@ -23,43 +39,154 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{R echo=FALSE}
 crime_df <- read.csv("2007_2015_Taipei_Larcenies.csv")
-head(crime_df,n=5)
+str(crime_df)
 ```
+
+**資料處理**
+
+1. 統計各年度的嫌疑犯人數、破案件數及犯罪發生件數總和。
+```{R echo = TRUE , message = FALSE , warning = FALSE}
+Sum_Offenders_Year <- aggregate(crime_df$Offenders, by=list(Year=crime_df$Year), FUN=sum)
+Sum_OffenseClearedNumber_Year <- aggregate(crime_df$OffenseClearedNumber, by=list(Year=crime_df$Year), FUN=sum)
+Sum_TotalEvent_Year <- aggregate(crime_df$TotalEvent, by=list(Year=crime_df$Year), FUN=sum)
+```
+```{R echo = FALSE , message = FALSE , warning = FALSE}
+colnames(Sum_Offenders_Year) <- c("Year", "Offenders")
+colnames(Sum_OffenseClearedNumber_Year) <- c("Year", "OffenseClearedNumber")
+colnames(Sum_TotalEvent_Year) <- c("Year", "TotalEvent")
+```
+
+2. 使用merge函數以年份將三個計算結果作合併。
+```{R echo = TRUE , message = FALSE , warning = FALSE}
+Sum_Year <- merge(Sum_Offenders_Year, Sum_OffenseClearedNumber_Year, all.x = TRUE)
+Sum_Year <- merge(Sum_Year, Sum_TotalEvent_Year, all.x = TRUE)
+```
+
+3. 再用gather函數轉換成長表格，以繪製multiple-line graph。
+```{R echo = TRUE , message = FALSE , warning = FALSE}
+Sum_Year_long_df <- gather(Sum_Year, key = Category, value = values, Offenders, OffenseClearedNumber,TotalEvent)
+```
+
+### **圖一說明**
+
+- 2007年至2015年，竊盜犯罪發生總件數從20212件下降至6250件。
+- 破案件數有越來越接近犯罪件數的趨勢。
+- 犯罪人數整體而言為增加的情況。　　　
+
+```{R echo = FALSE , message = FALSE , warning = FALSE}
+linechart <- ggplot(Sum_Year_long_df, aes(x = Year, y = values , colour = Category)) + 
+  geom_point() +
+  geom_line()+
+  ggtitle("圖一 2007-2015年臺北市竊盜犯罪嫌疑犯人數與案件統計") +
+  xlab("Year") +
+  ylab("Value")
+ggplotly(linechart)
+```
+
+* * *
+
+### **圖二說明**
+
+- 不分年份排名竊盜案件數最多的前三名：大安區>中山區>士林區。
+- 很會打擊犯罪的區域，也就是逼近對角線的地方：中正區(2015)、文山區(2015)、南港區(2015)、北投區(2008,2012)　　　
+
+```{R echo = FALSE , message = FALSE , warning = FALSE}
+pointchart <- ggplot(crime_df, aes(label = TownName , label1= Year , x = TotalEvent, y = OffenseClearedNumber)) + 
+  geom_point(aes(colour = factor(TownName)))+
+  ggtitle("圖二 2007-2015年臺北市各行政區 竊盜案件數 vs. 破獲件數") +
+  xlab("竊盜案件數") +
+  ylab("破獲件數") +
+  scale_colour_hue(name = "Town") +
+  geom_abline(intercept = 1, slope = 1, linetype = "dashed")
+ggplotly(pointchart)
+```
+
+* * *
+
+**資料處理**
+
+挑出2015年的資料後，選取需要的欄位，再轉換成長表格以繪製多重直方圖。
+```{R echo = TRUE , message = FALSE , warning = FALSE}
+crime_2015 <- crime_df[crime_df$Year==2015,]
+crime_2015_sel <- select(crime_2015,TownName,TotalEvent,OffenseClearedNumber,Offenders)
+crime_2015_long_df <- gather(crime_2015_sel, key = Category, value = values, TotalEvent, OffenseClearedNumber,Offenders)
+```
+
+### **圖三說明**
+
+- 其實這部分從前面幾張圖大致可觀察出來，但想記錄一下轉換長表格的用途以及如何繪製Multiple Bar Graph。
+- 在上課時還不太清楚轉換長表格要幹嘛，發現在繪圖時很實用。
+```{R echo = TRUE , message = FALSE , warning = FALSE}
+bar2015 <- ggplot(crime_2015_long_df, aes(x = TownName, y = values)) +
+  geom_bar(aes(fill = Category),stat = "identity",position = "dodge")+
+  ggtitle("2015年臺北市各行政區竊盜犯罪統計") +
+  xlab("Town") +
+  ylab("Value") + 
+  scale_fill_brewer(palette = "Set3", name = "統計項目")
+ggplotly(bar2015)
+```
+
+**以上都是只看項目的統計總數，但是每個區域的人口數量不一樣，所以只看總數的話可能比較不周全。**
+
+* * *
+
+### **圖四說明**
+
+- 犯罪發生率的定義是每十萬人口犯罪發生件數，納入人口因素來看，較高竊盜犯罪率的地方是大同區、中山區、中正區及萬華區。
+- 單就竊盜案件來說，內湖區、文山區和北投區是相對比較安全的地方，要搬到臺北市的話可以考慮這些地方。(但首先要有錢ㄏㄏ)
+
+```{R echo = FALSE , message = FALSE , warning = FALSE}
+boxplotchart <- ggplot(crime_df, aes(x = TownName, y = CrimeRate)) +
+  geom_boxplot(fill = "#AFEEEE", colour = "#585858") +
+  ggtitle("圖四 2007-2015年臺北市各行政區竊盜犯罪發生率") +
+  xlab("行政區") +
+  ylab("發生率(件/十萬人)")
+ggplotly(boxplotchart)
+```
+
+## **臺北市各類型犯罪統計(2016)**
+
+**臺北市較詳細的犯罪資料統計數據目前只有找到竊盜案件，另外還有多種類型的犯罪案件數據，資料比較新但是內容記錄較為粗糙。**
+
+* * *
+
+### **資料簡介**
 
 - **資料集名稱**：2016年臺北市犯罪資料
 - **資料來源**：警政署
 - **資料欄位**：案類、發生日期、發生地點
 - **資料內容**：毒品、強盜、搶奪、住宅盜竊、汽車竊盜、機車竊盜、強制性交等7案類犯罪發生資料
 
-```{R echo=FALSE}
-library(jsonlite)
+```{R echo = FALSE , message = FALSE , warning = FALSE}
 url <- "2016_Taipei_Crime.json" 
 crime_2016_df <- fromJSON(url)
-head(crime_2016_df,n=5)
+str(crime_2016_df)
 ```
 
-##**2007年-2015年臺北市竊盜案件**
+### **圖五說明**
 
-```{R echo=FALSE,message=FALSE}
-library(ggplot2)
-library(plotly)
-Sum_Offenders_Year <- aggregate(crime_df$Offenders, by=list(Year=crime_df$Year), FUN=sum)
-colnames(Sum_Offenders_Year) <- c("Year", "Offenders")
-Sum_OffenseClearedNumber_Year <- aggregate(crime_df$OffenseClearedNumber, by=list(Year=crime_df$Year), FUN=sum)
-colnames(Sum_OffenseClearedNumber_Year) <- c("Year", "OffenseClearedNumber")
-Sum_TotalEvent_Year <- aggregate(crime_df$TotalEvent, by=list(Year=crime_df$Year), FUN=sum)
-colnames(Sum_TotalEvent_Year) <- c("Year", "TotalEvent")
+- 2016年臺北市各行政區的犯罪案件總數，以毒品為最大宗。　　　
 
-Sum_Year <- merge(Sum_Offenders_Year, Sum_OffenseClearedNumber_Year, all.x = TRUE)
-Sum_Year <- merge(Sum_Year, Sum_TotalEvent_Year, all.x = TRUE)
-library(tidyr)
-Sum_Year_long_df <- gather(Sum_Year, key = Category, value = values, Offenders, OffenseClearedNumber,TotalEvent)
-
-linechart <- ggplot(Sum_Year_long_df, aes(x = Year, y = values , colour = Category)) + 
-  geom_point() +
-  geom_line()+
-  ggtitle("2007-2015年臺北市竊盜犯罪統計") +
-  xlab("Year") +
-  ylab("Value")
-ggplotly(linechart)
+```{R echo = FALSE , message = FALSE , warning = FALSE}
+histochart <- ggplot(crime_2016_df, aes(x = Type)) +
+  geom_histogram(stat="count",fill = "#81d8d0") +
+  ggtitle("圖五 2016年臺北市犯罪類型件數統計") +
+  xlab("犯罪類型") +
+  ylab("計數")
+ggplotly(histochart)
 ```
+
+### **圖六說明**
+
+- 綜合多種犯罪類型案件來看，中山區、萬華區的犯罪案件遠高於其他區域，可能涉及到不同的地理環境、人文發展和社會經濟因素等。　　　
+
+```{R echo = FALSE , message = FALSE , warning = FALSE}
+bar2016 <- ggplot(crime_2016_df, aes(x = TownName)) +
+  geom_bar(aes(fill = Type),stat = "count")+
+  ggtitle("圖六 2016年臺北市各行政區犯罪類型統計") +
+  xlab("Town") +
+  ylab("Count") + 
+  scale_fill_brewer(palette = "Set3",name = "犯罪類型")
+ggplotly(bar2016)
+```
+

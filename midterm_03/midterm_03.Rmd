@@ -1,6 +1,6 @@
 ---
 title: "R程式設計-作業三"
-author: "Elsie Hsieh"
+author: "Ching-En Hsieh"
 date: "2017年2月4日"
 output:
   html_document:

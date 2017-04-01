@@ -1,5 +1,5 @@
 ---
-title: "278期R程式設計期末作業"
+title: "R程式設計-期末作業"
 author: "Ching-En Hsieh"
 date: "2017年2月10日"
 output:

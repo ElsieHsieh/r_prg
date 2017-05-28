@@ -1,5 +1,5 @@
 ---
-title: "R程式設計-期末作業"
+title: "Kaggle資料分析競賽"
 author: "Ching-En Hsieh"
 date: "2017年2月10日"
 output:
@@ -27,7 +27,7 @@ library(randomForest)
 library(plotly)
 ```
 
-## 作業摘要
+## 摘要
 
 使用[Kaggle](https://www.kaggle.com)的[Titanic](https://www.kaggle.com/c/titanic)訓練及測試資料進行資料整理、分析、遺漏值填補以及建立預測模型，最後進行資料預測並提交結果，得到的分數為0.79426。
 
@@ -176,7 +176,6 @@ write.csv(to_submit_cart,file="to_be_submitted_cart.csv",row.names = FALSE)
 ## 5.提交至Kaggle
 
 使用隨機森林預測模型的結果分數為0.76555。
-![](kaggle_rf_predict.JPG)　　　　
 
 使用決策樹預測模型的結果分數為**<span style="color: #ff7f50; font-size: 20pt">0.79426</span>**。
 ![](kaggle_my_score.JPG)

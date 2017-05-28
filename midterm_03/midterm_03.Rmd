@@ -1,5 +1,5 @@
 ---
-title: "R程式設計-作業三"
+title: "2007-2016臺北市犯罪案件分析"
 author: "Ching-En Hsieh"
 date: "2017年2月4日"
 output:
@@ -115,7 +115,7 @@ crime_2015_long_df <- gather(crime_2015_sel, key = Category, value = values, Tot
 ### **圖三說明**
 
 - 其實這部分從前面幾張圖大致可觀察出來，但想記錄一下轉換長表格的用途以及如何繪製Multiple Bar Graph。
-- 在上課時還不太清楚轉換長表格要幹嘛，發現在繪圖時很實用。
+
 ```{R echo = TRUE , message = FALSE , warning = FALSE}
 bar2015 <- ggplot(crime_2015_long_df, aes(x = TownName, y = values)) +
   geom_bar(aes(fill = Category),stat = "identity",position = "dodge")+

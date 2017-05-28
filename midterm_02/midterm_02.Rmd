@@ -1,5 +1,5 @@
 ---
-title: "R程式設計-作業二"
+title: "2008-2014年自來水用水量統計分析"
 author: "謝青恩"
 date: "2017年1月23日"
 output: 
@@ -13,6 +13,10 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+**使用R的Base plotting system繪製分析圖表。**
+
+* * *
 
 ##**資料簡介**
 
@@ -124,7 +128,6 @@ plot(Year_Taichung, DWP_Taichung, type = "l", main = "2008年到2014年臺中市
 ```
 
 用散佈圖來看各年度各縣市不同的自來水供給人口數和人均用水量，看不出什麼明顯的趨勢。
-(充版面用XD)
 
 ```{R echo=FALSE,message=FALSE}
 plot(Six_City$PopulationServed, Six_City$DailyWaterPerPerson, main = "六都供水人數vs.每人每日生活用水量", xlab = "人數", ylab = "用水量")
